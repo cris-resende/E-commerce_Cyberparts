@@ -1,0 +1,58 @@
+package com.edu.infnet.CyberParts.model.test;
+
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
+import org.springframework.stereotype.Component;
+
+import com.edu.infnet.CyberParts.model.domain.Usuario;
+import com.edu.infnet.CyberParts.model.service.UsuarioService;
+
+
+@Component
+public class TesteUsuario implements ApplicationRunner{
+	
+	@Autowired
+	private UsuarioService service;
+
+	@Override
+	public void run(ApplicationArguments args) throws Exception {
+        try{
+            FileReader arquivo = new FileReader("usuarios.csv");
+            BufferedReader leitura = new BufferedReader(arquivo);
+
+            String linha = leitura.readLine();
+            String[] campos = null;
+
+            while(linha != null){
+                campos = linha.split(",");
+
+                Usuario u = new Usuario();
+                u.nome = campos[0];
+                u.email = campos[1];
+                u.tipo = campos[3];
+                
+                service.incluirUser(u);
+                linha = leitura.readLine();
+
+            }
+            for(Usuario u : service.obterUsers()){
+                System.out.println(u);
+                System.out.println("-----------------------------------------------------------------");
+            }
+            leitura.close();
+
+        } catch (FileNotFoundException e) {
+            System.out.println("Arquivo não encontrado!");
+            e.printStackTrace();
+        }catch (IOException e){
+            System.out.println("Imporssível abrir/fechar o arquivo");
+            e.printStackTrace();
+        }
+	}
+}

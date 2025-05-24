@@ -11,10 +11,10 @@ import com.edu.infnet.CyberParts.model.domain.Pagamento;
 @Service
 public class PagamentoService {
 	
-    private Map<String, Pagamento> mapaPagamentos = new HashMap<String, Pagamento>();
+    private Map<Integer, Pagamento> mapaPagamentos = new HashMap<Integer, Pagamento>();
 
     public void registrarPagamento(Pagamento p){
-        mapaPagamentos.put(p.pedido, p);
+        mapaPagamentos.put(p.id, p);
     }
 
     public Collection<Pagamento> obterPagamentos(){

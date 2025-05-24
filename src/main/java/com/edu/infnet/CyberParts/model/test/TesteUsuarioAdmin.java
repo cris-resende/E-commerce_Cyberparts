@@ -17,7 +17,7 @@ import com.edu.infnet.CyberParts.model.domain.UsuarioAdministrador;
 import com.edu.infnet.CyberParts.model.service.ProdutoService;
 
 @Component
-@Order(6)
+@Order(5)
 public class TesteUsuarioAdmin implements ApplicationRunner {
 
     @Autowired
@@ -43,7 +43,7 @@ public class TesteUsuarioAdmin implements ApplicationRunner {
                     admin.nome = campos[0];
                     admin.email = campos[1];
                     // admin.senha = campos[2];
-                    admin.tipo = tipoUsuario;
+                    admin.setTipo(tipoUsuario);
 
                     System.out.println("Ações do administrador: " + admin.nome + " (" + admin.email + ")");
 

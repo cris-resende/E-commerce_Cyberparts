@@ -1,14 +1,10 @@
 package com.edu.infnet.CyberParts.model.domain;
 
-import java.util.List;
-
 public class Usuario {
     public String nome;
     public String email;
     //private String senha;
-    public String tipo;
-    public List<Pedido> pedidos;
-    public Pagamento pagamento;
+    private String tipo;
     
     public String getTipo() {
         return tipo;

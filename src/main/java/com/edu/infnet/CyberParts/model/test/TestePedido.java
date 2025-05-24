@@ -6,7 +6,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
@@ -15,15 +15,22 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import com.edu.infnet.CyberParts.model.domain.Pedido;
+import com.edu.infnet.CyberParts.model.domain.Produto;
+import com.edu.infnet.CyberParts.model.domain.Usuario;
 import com.edu.infnet.CyberParts.model.service.PedidoService;
-
+import com.edu.infnet.CyberParts.model.service.ProdutoService;
+import com.edu.infnet.CyberParts.model.service.UsuarioService;
 
 @Component
-@Order(5)
+@Order(4)
 public class TestePedido implements ApplicationRunner {
 	
 	@Autowired
 	private PedidoService service;
+    @Autowired
+    private UsuarioService usuarioService;
+    @Autowired
+    private ProdutoService produtoService;
 
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
@@ -39,12 +46,36 @@ public class TestePedido implements ApplicationRunner {
                 campos = linha.split(",");
 
                 Pedido p = new Pedido();
-                p.cliente = campos[0];
-                p.produto = campos[1];
+                p.id = Integer.parseInt(campos[0]);
+
+                String emailCliente = campos[1];
+
+                Usuario cliente = usuarioService.obterUsers().stream()
+                                                    .filter(u -> Objects.equals(u.email, emailCliente))
+                                                    .findFirst()
+                                                    .orElse(null);
+
+                if (cliente != null) {
+                    p.cliente = cliente;
+                } else {
+                    System.out.println("AVISO: Usuário '" + emailCliente + "' não encontrado para o pedido ID " + p.id + ". Verifique o CSV de usuários.");
+                }
+
+                String nomeProdutoDoCsv = campos[2]; 
+                Produto produtoEncontrado = produtoService.obterProdutos().stream()
+                                                    .filter(prod -> Objects.equals(prod.nomeProduto, nomeProdutoDoCsv))
+                                                    .findFirst()
+                                                    .orElse(null);
+
+                if (produtoEncontrado != null) {
+                    p.produtos.add(produtoEncontrado);
+                } else {
+                    System.out.println("AVISO: Produto '" + nomeProdutoDoCsv + "' não encontrado para o pedido ID " + p.id + ". Verifique o CSV de produtos.");
+                }
 
                 DateTimeFormatter formato = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-                p.data = LocalDate.parse(campos[2], formato);
-                p.status = campos[3];
+                p.data = LocalDate.parse(campos[3], formato);
+                p.status = campos[4];
 
                 service.incluirPedido(p);
                 linha = leituraPedidos.readLine();
@@ -53,14 +84,18 @@ public class TestePedido implements ApplicationRunner {
                 System.out.println(p);
                 System.out.println("---------------------------------------------------------------------------------------------");
             }
+            System.out.println("Total de pedidos carregados: " + service.obterPedidos().size());
             leituraPedidos.close();
         } catch (FileNotFoundException e) {
-            System.out.println("Arquivo de pedidos não encontrado");
+            System.out.println("Arquivo de pedidos (pedidos.csv) não encontrado!");
             e.printStackTrace();
         } catch (IOException e){
-            System.out.println("Imporssível abrir/fechar o arquivo");
+            System.out.println("Impossível abrir/fechar o arquivo de pedidos.");
+            e.printStackTrace();
+        } catch (NumberFormatException e) {
+            System.out.println("Erro na conversão de número no arquivo CSV de pedidos. Verifique o formato do ID.");
             e.printStackTrace();
         }
-        System.out.println("\n--- FIM DO TESTE DE PEDIDOS ---");
+        System.out.println("--- FIM DO TESTE DE PEDIDOS ---");
 	}
 }

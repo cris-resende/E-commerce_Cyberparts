@@ -1,7 +1,7 @@
 package com.edu.infnet.CyberParts.model.domain;
 
 import java.util.List;
-import java.util.ArrayList; // Importar ArrayList para inicializar a lista de produtos
+import java.util.ArrayList;
 
 public class Carrinho {
     public String id;

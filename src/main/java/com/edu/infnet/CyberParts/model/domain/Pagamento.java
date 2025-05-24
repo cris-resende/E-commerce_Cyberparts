@@ -1,16 +1,22 @@
 package com.edu.infnet.CyberParts.model.domain;
 
-import java.util.List;
+
 
 public class Pagamento {
-    public String pedido;
+    public int id;
+    public Pedido pedidoAssociado;
     public String forma;
-    public Float valor;
+    public Double valorTotal;
     public String status;
-    public Usuario usuario;
-    public List<Pedido> pedidos; 
+
+
     @Override
     public String toString() {
-        return String.format("Pagamento: %s - Forma:%s - Valor: %f - Status: %s", pedido, forma, valor, status);
+        return String.format("Pagamento ID: %d - Pedido: %s - Forma: %s - Valor: %.2f - Status: %s",
+                             id,
+                             pedidoAssociado != null ? "ID: " + pedidoAssociado.id + " | Cliente: " + (pedidoAssociado.cliente != null ? pedidoAssociado.cliente.nome : "N/A") : "N/A",
+                             forma,
+                             valorTotal,
+                             status);
     }
 }

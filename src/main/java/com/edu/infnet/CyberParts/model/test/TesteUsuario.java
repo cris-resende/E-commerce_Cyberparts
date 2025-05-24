@@ -38,7 +38,7 @@ public class TesteUsuario implements ApplicationRunner{
                 Usuario u = new Usuario();
                 u.nome = campos[0];
                 u.email = campos[1];
-                u.tipo = campos[3];
+                u.setTipo(campos[3]);
                 
                 service.incluirUser(u);
                 linha = leitura.readLine();

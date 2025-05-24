@@ -1,19 +1,28 @@
 package com.edu.infnet.CyberParts.model.domain;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.time.LocalDate;
 
 public class Pedido {
-    public String cliente;
-    public String produto;
+	public int id;
+    public Usuario cliente;
     public LocalDate data;
     public String status;
     public List<Produto> produtos;
     public Pagamento pagamento;
-    public Usuario usuario;
+    
+    public Pedido() {
+    	this.produtos = new ArrayList<>();
+    }
 
     @Override
     public String toString() {
-        return String.format("Pedido: %s - Produto: %s - Data: %s - Status: %s", cliente, produto, data, status);
+        return String.format("Pedido ID: %d - Cliente: %s - Data: %s - Status: %s - Total de Produtos: %d",
+                id,
+                cliente != null ? cliente.nome : "N/A",
+                data,
+                status,
+                produtos != null? produtos.size() : 0);
     }
 }

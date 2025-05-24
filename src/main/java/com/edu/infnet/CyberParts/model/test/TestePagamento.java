@@ -8,6 +8,7 @@ import java.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import com.edu.infnet.CyberParts.model.domain.Pagamento;
@@ -15,6 +16,7 @@ import com.edu.infnet.CyberParts.model.service.PagamentoService;
 
 
 @Component
+@Order(4)
 public class TestePagamento implements ApplicationRunner {
 
 	@Autowired
@@ -22,6 +24,7 @@ public class TestePagamento implements ApplicationRunner {
 	
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
+        System.out.println("\n--- TESTE DE PAGAMENTOS ---");
         try {
             FileReader arquivoPagamentos = new FileReader("pagamento.csv");
             BufferedReader leituraPagamentos = new BufferedReader(arquivoPagamentos);
@@ -53,5 +56,6 @@ public class TestePagamento implements ApplicationRunner {
             System.out.println("Imporssível abrir/fechar o arquivo");
             e.printStackTrace();
         }
+        System.out.println("\n--- FIM DO TESTE DE PAGAMENTOS ---");
 	}
 }

@@ -9,6 +9,14 @@ public class Usuario {
     public String tipo;
     public List<Pedido> pedidos;
     public Pagamento pagamento;
+    
+    public String getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
+    }
 
     @Override
     public String toString() {

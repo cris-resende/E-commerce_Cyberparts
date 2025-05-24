@@ -11,6 +11,7 @@ import java.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import com.edu.infnet.CyberParts.model.domain.Pedido;
@@ -18,6 +19,7 @@ import com.edu.infnet.CyberParts.model.service.PedidoService;
 
 
 @Component
+@Order(5)
 public class TestePedido implements ApplicationRunner {
 	
 	@Autowired
@@ -25,6 +27,7 @@ public class TestePedido implements ApplicationRunner {
 
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
+        System.out.println("\n--- TESTE DE PEDIDOS ---");
         try{
             FileReader arquivoPedidos = new FileReader("pedidos.csv");
             BufferedReader leituraPedidos = new BufferedReader(arquivoPedidos);
@@ -58,5 +61,6 @@ public class TestePedido implements ApplicationRunner {
             System.out.println("Imporssível abrir/fechar o arquivo");
             e.printStackTrace();
         }
+        System.out.println("\n--- FIM DO TESTE DE PEDIDOS ---");
 	}
 }

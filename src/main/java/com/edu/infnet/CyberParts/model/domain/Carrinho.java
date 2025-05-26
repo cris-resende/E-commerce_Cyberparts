@@ -1,13 +1,29 @@
 package com.edu.infnet.CyberParts.model.domain;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
+
+@Entity
+@Table(name="TCarrinho")
 public class Carrinho {
-    public String id;
-    public Usuario usuario;
-    public List<Produto> produtos;
+	
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+    public Integer id;
     public double valorTotal;
+    
+    @Transient
+    public Usuario usuario;
+    @Transient
+    public List<Produto> produtos;
+
 
     public Carrinho() {
         this.produtos = new ArrayList<>();

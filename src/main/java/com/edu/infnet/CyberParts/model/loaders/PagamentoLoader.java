@@ -1,24 +1,25 @@
-package com.edu.infnet.CyberParts.model.test;
+package com.edu.infnet.CyberParts.model.loaders;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired; // Correção aqui
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import com.edu.infnet.CyberParts.model.domain.Pagamento;
-import com.edu.infnet.CyberParts.model.domain.Pedido; // Importar a classe Pedido
+import com.edu.infnet.CyberParts.model.domain.Pedido;
 import com.edu.infnet.CyberParts.model.service.PagamentoService;
-import com.edu.infnet.CyberParts.model.service.PedidoService; // Importar o PedidoService
+import com.edu.infnet.CyberParts.model.service.PedidoService;
 
 @Component
 @Order(6)
-public class TestePagamento implements ApplicationRunner {
+public class PagamentoLoader implements ApplicationRunner {
 
 	@Autowired
 	private PagamentoService service;
@@ -48,7 +49,8 @@ public class TestePagamento implements ApplicationRunner {
                 p.valorTotal = Double.parseDouble(campos[2]);
                 p.status = campos[3];
                 
-                Pedido pedidoAssociado = pedidoService.obterPedidoPorId(idPedidoAssociado);
+                Optional<Pedido> pedidoOptional = pedidoService.obterPedidoPorId(idPedidoAssociado);
+                Pedido pedidoAssociado = pedidoOptional.orElse(null);
 
                 if (pedidoAssociado != null) {
                     p.pedidoAssociado = pedidoAssociado;
@@ -63,7 +65,7 @@ public class TestePagamento implements ApplicationRunner {
                 System.out.println(p);
                 System.out.println("---------------------------------------------------------------------------------------------");
             }
-            System.out.println("Total de pagamentos carregados: " + service.obterPagamentos().size());
+            System.out.println("Total de pagamentos carregados: " + service.obterPagamentos());
             leituraPagamentos.close();
         } catch (FileNotFoundException e) {
             System.out.println("Arquivo de pagamentos (pagamento.csv) não encontrado!");

@@ -1,34 +1,32 @@
 package com.edu.infnet.CyberParts.model.service;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.edu.infnet.CyberParts.model.domain.Pedido;
+import com.edu.infnet.CyberParts.model.repository.PedidoRepository;
 
 @Service
 public class PedidoService {
 	
-    private Map<Integer, Pedido> mapaPedidos = new HashMap<Integer, Pedido>();
-
+	@Autowired
+	private PedidoRepository pedidoRepository;
+	
     public void incluirPedido(Pedido p){
-    	if (p.id == 0) {
-    		System.err.println("Erro: Pedido sem ID não pode ser incluído no mapa de pedidos.");
-    		return;
-    	}
-        mapaPedidos.put(p.id, p);
+    	pedidoRepository.save(p);
     }
 
-    public Collection<Pedido> obterPedidos(){
-        return mapaPedidos.values();
+    public Iterable<Pedido> obterPedidos(){
+        return pedidoRepository.findAll();
     }
-    public Pedido obterPedidoPorId(int id) {
-    	return mapaPedidos.get(id);
+    public Optional<Pedido> obterPedidoPorId(Integer id) {
+    	return pedidoRepository.findById(id);
     }
+    
     public void removerPedido(int id) {
-    	mapaPedidos.remove(id);
+    	pedidoRepository.deleteById(id);
     }
 
 }

@@ -1,7 +1,19 @@
 package com.edu.infnet.CyberParts.model.domain;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name="TProdutos")
 public class Produto {
-    public int codigo;
+	
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+    public Integer codigo;
+	
     public String nomeProduto;
     public String categoria;
     public double preco;

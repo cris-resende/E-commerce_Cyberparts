@@ -1,22 +1,22 @@
 package com.edu.infnet.CyberParts.model.service;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.edu.infnet.CyberParts.model.domain.Produto;
+import com.edu.infnet.CyberParts.model.repository.ProdutoRepository;
 
 @Service
 public class ProdutoService {
-    private Map<Integer, Produto> mapaProdutos = new HashMap<Integer, Produto>();
 
+	@Autowired
+	private ProdutoRepository produtoRepository;
+	
     public void incluirProduto(Produto p){
-        mapaProdutos.put(p.codigo, p);
+        produtoRepository.save(p);
     }
 
-    public Collection<Produto> obterProdutos(){
-        return mapaProdutos.values();
+    public Iterable<Produto> obterProdutos(){
+        return produtoRepository.findAll();
     }
 }

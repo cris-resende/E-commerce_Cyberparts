@@ -22,6 +22,17 @@
     </properties>
 
     <dependencies>
+    	<!--Banco h2-->
+    	<dependency>
+    		<groupId>org.springframework.boot</groupId>
+    		<artifactId>spring-boot-starter-data-jpa</artifactId>
+    	</dependency>
+    	<dependency>
+    		<groupId>com.h2database</groupId>
+    		<artifactId>h2</artifactId>
+    		<scope>runtime</scope>
+    	</dependency>
+    	
         <!-- Spring Boot Web -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -39,28 +50,6 @@
                     <artifactId>junit-vintage-engine</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
-
-        <!-- Mockito -->
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-            <version>${mockito.version}</version><!--$NO-MVN-MAN-VER$-->
-            <scope>test</scope>
-        </dependency>
-
-        <!-- Byte Buddy for Mockito -->
-        <dependency>
-            <groupId>net.bytebuddy</groupId>
-            <artifactId>byte-buddy</artifactId>
-            <version>${byte-buddy.version}</version><!--$NO-MVN-MAN-VER$-->
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>net.bytebuddy</groupId>
-            <artifactId>byte-buddy-agent</artifactId>
-            <version>${byte-buddy.version}</version><!--$NO-MVN-MAN-VER$-->
-            <scope>test</scope>
         </dependency>
     </dependencies>
 

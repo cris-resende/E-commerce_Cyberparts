@@ -1,13 +1,27 @@
 package com.edu.infnet.CyberParts.model.domain;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
-
+@Entity
+@Table(name="TPagamentos")
 public class Pagamento {
-    public int id;
-    public Pedido pedidoAssociado;
+	
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+    public Integer id;
+	
     public String forma;
     public Double valorTotal;
     public String status;
+    
+    @Transient
+    public Pedido pedidoAssociado;
+
 
 
     @Override

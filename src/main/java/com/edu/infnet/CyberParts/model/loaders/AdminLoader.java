@@ -1,4 +1,4 @@
-package com.edu.infnet.CyberParts.model.test;
+package com.edu.infnet.CyberParts.model.loaders;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -18,7 +18,7 @@ import com.edu.infnet.CyberParts.model.service.ProdutoService;
 
 @Component
 @Order(5)
-public class TesteUsuarioAdmin implements ApplicationRunner {
+public class AdminLoader implements ApplicationRunner {
 
     @Autowired
     private ProdutoService pService;

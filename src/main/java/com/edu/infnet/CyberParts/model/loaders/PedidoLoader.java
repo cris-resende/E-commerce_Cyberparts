@@ -1,4 +1,4 @@
-package com.edu.infnet.CyberParts.model.test;
+package com.edu.infnet.CyberParts.model.loaders;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
+import java.util.stream.StreamSupport;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
@@ -23,7 +24,7 @@ import com.edu.infnet.CyberParts.model.service.UsuarioService;
 
 @Component
 @Order(4)
-public class TestePedido implements ApplicationRunner {
+public class PedidoLoader implements ApplicationRunner {
 	
 	@Autowired
 	private PedidoService service;
@@ -50,7 +51,7 @@ public class TestePedido implements ApplicationRunner {
 
                 String emailCliente = campos[1];
 
-                Usuario cliente = usuarioService.obterUsers().stream()
+                Usuario cliente = StreamSupport.stream(usuarioService.obterUsers().spliterator(), false)
                                                     .filter(u -> Objects.equals(u.email, emailCliente))
                                                     .findFirst()
                                                     .orElse(null);
@@ -62,7 +63,7 @@ public class TestePedido implements ApplicationRunner {
                 }
 
                 String nomeProdutoDoCsv = campos[2]; 
-                Produto produtoEncontrado = produtoService.obterProdutos().stream()
+                Produto produtoEncontrado = StreamSupport.stream(produtoService.obterProdutos().spliterator(), false)
                                                     .filter(prod -> Objects.equals(prod.nomeProduto, nomeProdutoDoCsv))
                                                     .findFirst()
                                                     .orElse(null);
@@ -84,7 +85,7 @@ public class TestePedido implements ApplicationRunner {
                 System.out.println(p);
                 System.out.println("---------------------------------------------------------------------------------------------");
             }
-            System.out.println("Total de pedidos carregados: " + service.obterPedidos().size());
+            System.out.println("Total de pedidos carregados: " + service.obterPedidos());
             leituraPedidos.close();
         } catch (FileNotFoundException e) {
             System.out.println("Arquivo de pedidos (pedidos.csv) não encontrado!");

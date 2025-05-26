@@ -1,6 +1,19 @@
 package com.edu.infnet.CyberParts.model.domain;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name="TUsuarios")
 public class Usuario {
+	
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	public Integer id;
+	
     public String nome;
     public String email;
     //private String senha;

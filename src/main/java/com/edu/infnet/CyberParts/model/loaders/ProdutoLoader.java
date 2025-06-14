@@ -26,28 +26,29 @@ public class ProdutoLoader implements ApplicationRunner {
 	public void run(ApplicationArguments args) throws Exception {
         System.out.println("\n--- TESTE DE PRODUTOS ---");
         try {
-            FileReader arquivoProduto = new FileReader("produtos.csv");
+            FileReader arquivoProduto = new FileReader("files/produtos.csv");
             BufferedReader leituraProduto = new BufferedReader(arquivoProduto);
 
             String linhaProduto = leituraProduto.readLine();
-            String[] Produtos = null;
+            String[] campos = null;
 
             while (linhaProduto != null) {
-                Produtos = linhaProduto.split(",");
+                campos = linhaProduto.split(",");
                 
                 Produto p = new Produto();
-                p.codigo = Integer.parseInt(Produtos[0]);
-                p.nomeProduto = Produtos[1];
-                p.categoria = Produtos[2];
-                p.preco = Float.valueOf(Produtos[3]);
-                p.estoque = Integer.parseInt(Produtos[4]);
+                p.setId(Integer.parseInt(campos[0]));
+                p.setNomeProduto(campos[1]);
+                p.setCategoria(campos[2]);
+                p.setPreco(Double.parseDouble(campos[3]));
+                p.setEstoque(Integer.parseInt(campos[4])); 
                 
                 service.incluirProduto(p);
                 linhaProduto = leituraProduto.readLine();
             }
 
             for(Produto p : service.obterProdutos()){
-                System.out.println(p);
+                System.out.println(String.format("ID: %d - Produto: %s - Categoria: %s - Preço: %.2f - Estoque: %d",
+                        p.getId(), p.getNomeProduto(), p.getCategoria(), p.getPreco(), p.getEstoque()));
                 System.out.println("---------------------------------------------------------------------------------------------");
             }
             leituraProduto.close();

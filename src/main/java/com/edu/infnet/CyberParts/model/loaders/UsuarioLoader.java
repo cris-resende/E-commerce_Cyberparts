@@ -24,9 +24,9 @@ public class UsuarioLoader implements ApplicationRunner{
 
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
-        System.out.println("\n--- TESTE DE USUARIOS ---");
+        System.out.println("\n--- INICIANDO CARREGAMENTO DE USUARIOS ---");
         try{
-            FileReader arquivo = new FileReader("usuarios.csv");
+            FileReader arquivo = new FileReader("files/usuarios.csv");
             BufferedReader leitura = new BufferedReader(arquivo);
 
             String linha = leitura.readLine();
@@ -36,27 +36,31 @@ public class UsuarioLoader implements ApplicationRunner{
                 campos = linha.split(",");
 
                 Usuario u = new Usuario();
-                u.nome = campos[0];
-                u.email = campos[1];
+                u.setNome(campos[0]);
+                u.setEmail(campos[1]);
                 u.setTipo(campos[3]);
                 
-                service.incluirUser(u);
+                service.incluirUsuario(u);
                 linha = leitura.readLine();
-
             }
-            for(Usuario u : service.obterUsers()){
+            Iterable<Usuario> usuariosCarregados = service.obterUsers();
+            long totalUsuarios = 0;
+            
+            for(Usuario u : usuariosCarregados){
                 System.out.println(u);
                 System.out.println("-----------------------------------------------------------------");
+                totalUsuarios++;
             }
+            System.out.println("Total de usuários carregados: " + totalUsuarios);
             leitura.close();
 
         } catch (FileNotFoundException e) {
-            System.out.println("Arquivo não encontrado!");
+            System.out.println("Arquivo de usuários (usuarios.csv) não encontrado!");
             e.printStackTrace();
         }catch (IOException e){
-            System.out.println("Imporssível abrir/fechar o arquivo");
+            System.out.println("Impossível abrir/fechar o arquivo de usuários.");
             e.printStackTrace();
         }
-        System.out.println("\n--- FIM DO TESTE DE USUARIOS ---");
+        System.out.println("\n--- FIM DO CARREGAMENTO DE USUARIOS ---");
 	}
 }

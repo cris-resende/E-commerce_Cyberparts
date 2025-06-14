@@ -35,9 +35,9 @@ public class PedidoLoader implements ApplicationRunner {
 
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
-        System.out.println("\n--- TESTE DE PEDIDOS ---");
+        System.out.println("\n--- INICIANDO CARREGAMENTO DE PEDIDOS ---");
         try{
-            FileReader arquivoPedidos = new FileReader("pedidos.csv");
+            FileReader arquivoPedidos = new FileReader("files/pedidos.csv");
             BufferedReader leituraPedidos = new BufferedReader(arquivoPedidos);
 
             String linha = leituraPedidos.readLine();
@@ -47,36 +47,34 @@ public class PedidoLoader implements ApplicationRunner {
                 campos = linha.split(",");
 
                 Pedido p = new Pedido();
-                p.id = Integer.parseInt(campos[0]);
+                p.setId(Integer.parseInt(campos[0]));
 
                 String emailCliente = campos[1];
-
-                Usuario cliente = StreamSupport.stream(usuarioService.obterUsers().spliterator(), false)
-                                                    .filter(u -> Objects.equals(u.email, emailCliente))
+                Usuario cliente =StreamSupport.stream(usuarioService.obterUsers().spliterator(), false)
+                                                    .filter(u -> Objects.equals(u.getEmail(), emailCliente))
                                                     .findFirst()
                                                     .orElse(null);
-
                 if (cliente != null) {
-                    p.cliente = cliente;
+                    p.setCliente(cliente);
                 } else {
-                    System.out.println("AVISO: Usuário '" + emailCliente + "' não encontrado para o pedido ID " + p.id + ". Verifique o CSV de usuários.");
+                    System.out.println("AVISO: Usuário '" + emailCliente + "' não encontrado para o pedido ID " + p.getId() + ". Verifique o CSV de usuários.");
                 }
 
-                String nomeProdutoDoCsv = campos[2]; 
+                String nomeProdutoDoCsv = campos[2];
                 Produto produtoEncontrado = StreamSupport.stream(produtoService.obterProdutos().spliterator(), false)
-                                                    .filter(prod -> Objects.equals(prod.nomeProduto, nomeProdutoDoCsv))
+                                                    .filter(prod -> Objects.equals(prod.getNomeProduto(), nomeProdutoDoCsv))
                                                     .findFirst()
                                                     .orElse(null);
 
                 if (produtoEncontrado != null) {
-                    p.produtos.add(produtoEncontrado);
+                    p.getProdutos().add(produtoEncontrado);
                 } else {
-                    System.out.println("AVISO: Produto '" + nomeProdutoDoCsv + "' não encontrado para o pedido ID " + p.id + ". Verifique o CSV de produtos.");
+                    System.out.println("AVISO: Produto '" + nomeProdutoDoCsv + "' não encontrado para o pedido ID " + p.getId() + ". Verifique o CSV de produtos.");
                 }
 
                 DateTimeFormatter formato = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-                p.data = LocalDate.parse(campos[3], formato);
-                p.status = campos[4];
+                p.setData(LocalDate.parse(campos[3], formato));
+                p.setStatus(campos[4]);
 
                 service.incluirPedido(p);
                 linha = leituraPedidos.readLine();
@@ -85,7 +83,7 @@ public class PedidoLoader implements ApplicationRunner {
                 System.out.println(p);
                 System.out.println("---------------------------------------------------------------------------------------------");
             }
-            System.out.println("Total de pedidos carregados: " + service.obterPedidos());
+            System.out.println("Total de pedidos carregados: " + StreamSupport.stream(service.obterPedidos().spliterator(), false).count());
             leituraPedidos.close();
         } catch (FileNotFoundException e) {
             System.out.println("Arquivo de pedidos (pedidos.csv) não encontrado!");
@@ -97,6 +95,6 @@ public class PedidoLoader implements ApplicationRunner {
             System.out.println("Erro na conversão de número no arquivo CSV de pedidos. Verifique o formato do ID.");
             e.printStackTrace();
         }
-        System.out.println("--- FIM DO TESTE DE PEDIDOS ---");
+        System.out.println("--- FIM DO CARREGAMENTO DE PEDIDOS ---");
 	}
 }

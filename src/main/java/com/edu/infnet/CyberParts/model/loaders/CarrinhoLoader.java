@@ -4,8 +4,9 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.StreamSupport;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.edu.infnet.CyberParts.model.domain.Carrinho;
 import com.edu.infnet.CyberParts.model.domain.Produto;
@@ -32,15 +34,18 @@ public class CarrinhoLoader implements ApplicationRunner {
     @Autowired
     private UsuarioService usuarioService;
 
+    @Transactional
     @Override
     public void run(ApplicationArguments args) throws Exception {
         System.out.println("\n--- INICIANDO CARREGAMENTO DE CARRINHOS ---");
         try {
-            FileReader arquivoCarrinhos = new FileReader("carrinhos.csv");
+            FileReader arquivoCarrinhos = new FileReader("files/carrinhos.csv");
             BufferedReader leituraCarrinhos = new BufferedReader(arquivoCarrinhos);
 
             String linha = leituraCarrinhos.readLine();
             String[] campos = null;
+
+            Map<Integer, Carrinho> carrinhosEmConstrucao = new HashMap<>();
 
             while (linha != null) {
                 campos = linha.split(",");
@@ -49,38 +54,38 @@ public class CarrinhoLoader implements ApplicationRunner {
                 String emailUsuario = campos[1];
                 int codigoProduto = Integer.parseInt(campos[2]);
 
-                Optional<Carrinho> carrinhoOptional = carrinhoService.obterCarrinhoPorId(idCarrinho);
-                Carrinho carrinho = null;
+                Carrinho carrinhoAtual = carrinhosEmConstrucao.get(idCarrinho);
 
-                if (carrinhoOptional.isPresent()) {
-                    carrinho = carrinhoOptional.get();
-                } else {
-                    carrinho = new Carrinho();
-                    carrinho.id = idCarrinho;
+                if (carrinhoAtual == null) {
+                    carrinhoAtual = new Carrinho();
+                    carrinhoAtual.setId(idCarrinho);
                     Usuario usuario = StreamSupport.stream(usuarioService.obterUsers().spliterator(), false)
-                                                    .filter(u -> Objects.equals(u.email, emailUsuario))
+                                                    .filter(u -> Objects.equals(u.getEmail(), emailUsuario))
                                                     .findFirst()
                                                     .orElse(null);
-
-                    carrinho.usuario = usuario;
-
+                    carrinhoAtual.setUsuario(usuario);
+                    carrinhosEmConstrucao.put(idCarrinho, carrinhoAtual);
                 }
 
                 Produto produtoAdicionar = StreamSupport.stream(produtoService.obterProdutos().spliterator(), false)
-                                                        .filter(p -> p.codigo == codigoProduto)
+                                                        .filter(p -> p.getId() == codigoProduto)
                                                         .findFirst()
                                                         .orElse(null);
 
                 if (produtoAdicionar != null) {
-                    carrinho.adicionarProduto(produtoAdicionar);
+                    carrinhoAtual.adicionarProduto(produtoAdicionar);
                 } else {
                     System.out.println("AVISO: Produto com código " + codigoProduto + " não encontrado para o carrinho " + idCarrinho + ". Verifique o CSV de produtos.");
                 }
                 
-                carrinho.calcularTotal();
+                carrinhoAtual.calcularTotal();
 
-                carrinhoService.incluirCarrinho(carrinho);
                 linha = leituraCarrinhos.readLine();
+            }
+            leituraCarrinhos.close();
+
+            for (Carrinho c : carrinhosEmConstrucao.values()) {
+                carrinhoService.incluirCarrinho(c);
             }
 
             System.out.println("\n--- TESTE DE CARRINHOS (Carregados do H2) ---");
@@ -90,20 +95,18 @@ public class CarrinhoLoader implements ApplicationRunner {
             
             for (Carrinho c : carrinhosCarregados) {
                 System.out.println(c);
-
-                if (c.produtos != null && !c.produtos.isEmpty()) {
-                    System.out.println("  Produtos no carrinho (via transient):");
-                    for (Produto p : c.produtos) {
-                        System.out.println("    - " + p.nomeProduto + " (R$ " + p.preco + ")");
+                if (c.getProdutos() != null && !c.getProdutos().isEmpty()) {
+                    System.out.println("  Produtos no carrinho (via lazy loading):");
+                    for (Produto p : c.getProdutos()) {
+                        System.out.println("    - " + p.getNomeProduto() + " (R$ " + p.getPreco() + ")");
                     }
                 } else {
-                    System.out.println("  Nenhum produto neste carrinho (ou não carregado via transient).");
+                    System.out.println("  Nenhum produto neste carrinho (ou lista vazia).");
                 }
                 System.out.println("---------------------------------------------------------------------------------------------");
             }
             System.out.println("Total de carrinhos carregados: " + totalCarrinhos);
 
-            leituraCarrinhos.close();
         } catch (FileNotFoundException e) {
             System.out.println("Arquivo de carrinhos (carrinhos.csv) não encontrado!");
             e.printStackTrace();

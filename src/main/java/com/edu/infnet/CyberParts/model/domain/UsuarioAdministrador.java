@@ -8,15 +8,15 @@ public class UsuarioAdministrador extends Usuario {
     }
 
     public void cadastrarProduto(Produto produto) {
-        System.out.println("ADMINISTRADOR: Produto '" + produto.nomeProduto + "' cadastrado.");
+        System.out.println("ADMINISTRADOR: Produto '" + produto.getNomeProduto() + "' cadastrado.");
     }
 
     public void editarProduto(Produto produto) {
-        System.out.println("ADMINISTRADOR: Produto '" + produto.nomeProduto + "' editado.");
+        System.out.println("ADMINISTRADOR: Produto '" + produto.getNomeProduto() + "' editado.");
     }
 
     public void removerProduto(Produto produto) {
-        System.out.println("ADMINISTRADOR: Produto '" + produto.nomeProduto + "' removido.");
+        System.out.println("ADMINISTRADOR: Produto '" + produto.getNomeProduto() + "' removido.");
     }
 
     public String gerarRelatorioVendas() {

@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
@@ -17,8 +16,10 @@ import com.edu.infnet.CyberParts.model.domain.Pedido;
 import com.edu.infnet.CyberParts.model.service.PagamentoService;
 import com.edu.infnet.CyberParts.model.service.PedidoService;
 
+import jakarta.transaction.Transactional;
+
 @Component
-@Order(6)
+@Order(5)
 public class PagamentoLoader implements ApplicationRunner {
 
 	@Autowired
@@ -26,11 +27,12 @@ public class PagamentoLoader implements ApplicationRunner {
 	@Autowired
 	private PedidoService pedidoService;
 	
+	@Transactional
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
-        System.out.println("\n--- TESTE DE PAGAMENTOS ---");
+        System.out.println("\n--- INICIANDO CARREGAMENTO DE PAGAMENTOS ---");
         try {
-            FileReader arquivoPagamentos = new FileReader("pagamento.csv");
+            FileReader arquivoPagamentos = new FileReader("files/pagamento.csv");
             BufferedReader leituraPagamentos = new BufferedReader(arquivoPagamentos);
 
             String linha = leituraPagamentos.readLine();
@@ -44,28 +46,26 @@ public class PagamentoLoader implements ApplicationRunner {
                 int idPagamento = Integer.parseInt(campos[0]);
                 int idPedidoAssociado = Integer.parseInt(campos[0]);
 
-                p.id = idPagamento;
-                p.forma = campos[1];
-                p.valorTotal = Double.parseDouble(campos[2]);
-                p.status = campos[3];
+                p.setId(idPagamento);
+                p.setForma(campos[1]);
+                p.setValorTotal(Double.parseDouble(campos[2]));
+                p.setStatus(campos[3]);
                 
-                Optional<Pedido> pedidoOptional = pedidoService.obterPedidoPorId(idPedidoAssociado);
-                Pedido pedidoAssociado = pedidoOptional.orElse(null);
-
-                if (pedidoAssociado != null) {
-                    p.pedidoAssociado = pedidoAssociado;
-                } else {
-                    System.out.println("AVISO: Pedido com ID " + idPedidoAssociado + " não encontrado para o pagamento ID " + idPagamento);
-                }
+                service.registrarPagamento(p, idPedidoAssociado);
                 
-                service.registrarPagamento(p);
                 linha = leituraPagamentos.readLine();
             }
-            for(Pagamento p : service.obterPagamentos()){
+            
+            Iterable<Pagamento> pagamentosCarregados = service.obterPagamentos();
+            long totalPagamentos = 0;
+            
+            for(Pagamento p : pagamentosCarregados){
                 System.out.println(p);
                 System.out.println("---------------------------------------------------------------------------------------------");
+                totalPagamentos++;
             }
-            System.out.println("Total de pagamentos carregados: " + service.obterPagamentos());
+            
+            System.out.println("Total de pagamentos carregados: " + totalPagamentos);
             leituraPagamentos.close();
         } catch (FileNotFoundException e) {
             System.out.println("Arquivo de pagamentos (pagamento.csv) não encontrado!");
@@ -77,6 +77,6 @@ public class PagamentoLoader implements ApplicationRunner {
             System.out.println("Erro na conversão de número no arquivo CSV de pagamentos. Verifique o formato dos valores.");
             e.printStackTrace();
         }
-        System.out.println("\n--- FIM DO TESTE DE PAGAMENTOS ---");
+        System.out.println("\n--- FIM DO CARREGAMENTO DE PAGAMENTOS ---");
 	}
 }
